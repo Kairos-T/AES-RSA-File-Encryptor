@@ -20,5 +20,16 @@ from Crypto.Random import get_random_bytes
 
 #RSA Key Pair
 key = RSA.generate(2048) #Key length of 2048 bits, key length determines strength of encryption and security level of RSA algorithm
-private_key = key.export_key()
+private_key = key.export_key() 
+#Private key: secret key generated during RSA key pair, kept confidential by owner
+#Used for decrypting messages that are encrypted with the corresponding public key
 public_key = key.publickey().export_key()
+#Derived from private key and is shared with others
+#Used by others to encrypt messages that are meant to be sent to the owner of the private key
+#Once encrypted, message can only be decrypted using the corresponding private key. 
+
+# RSA Key write to file
+with open('private_key.pem', 'wb') as f:
+    f.write(private_key)
+with open('public_key.pem', 'wb') as f:
+    f.write(public_key)
