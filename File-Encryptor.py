@@ -25,23 +25,29 @@ def generate_aes_key():
 
 def encrypt_file(filename, aes_key, rsa_public_key):
     """Encrypt a file using AES and RSA."""
-    # Read file contents
+    #Read file contents
     with open(filename, 'rb') as file:
         plaintext = file.read()
 
-    # Pad the plaintext to be a multiple of AES block size
+    #Pad the plaintext to be a multiple of AES block size
     plaintext += AES_padding * (AES_blocksize - len(plaintext) % AES_blocksize)
 
-    # Generate AES cipher using the AES key
+    #Generate AES cipher using the AES key
     aes_cipher = AES.new(aes_key, AES.MODE_EAX)
 
-    # Encrypt the plaintext using AES
+    #Encrypt the plaintext using AES
     ciphertext, tag = aes_cipher.encrypt_and_digest(plaintext)
 
-    # Encrypt the AES key using RSA public key
+    #Encrypt the AES key using RSA public key
     rsa_cipher = PKCS1_OAEP.new(rsa_public_key)
     encrypted_aes_key = rsa_cipher.encrypt(aes_key)
     
+    #Writing encrypted AES key and ciphertext to output fo;e
+    with open('encrypted_' + filename, 'wb') as output_file:
+        output_file.write(encrypted_aes_key)
+        output_file.write(aes_cipher.nonce)
+        output_file.write(tag)
+        output_file.write(ciphertext) 
 
 def decrypt_file(filename, aes_key, rsa_private_key):
     """Decrypt a file using AES and RSA."""

@@ -48,7 +48,8 @@ def encrypt_file(filename, aes_key, rsa_public_key):
     with open(filename, 'rb') as file:
         plaintext = file.read() #Reads content of file (filename parameter) in binary mode and stores it in plaintext variable
     
-    # Pad the plaintext to be a multiple of AES block size
+    # Pad the plaintext to be a multiple of AES block size  by appending AES_padding multiple times
+    #No. of padding bytes added is calculated as the difference between AES block size and modulus of (length of plaintext / AES block size)
     plaintext += AES_padding * (AES_blocksize - len(plaintext) % AES_blocksize)
 
     # Generate AES cipher using the AES key
