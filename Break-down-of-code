@@ -1,0 +1,24 @@
+#Imports
+
+import os
+from Crypto.Cipher import AES, PKCS1_OAEP 
+#AES: Advanced Encryption Standard algorithm to encrypt and decrypt data
+#Supports block sizes of 128, 192 and 256 bits 
+
+#PKCS1_OAEP: Optimal Asymmetric Encryption Padding (OAEP) scheme, widely used padding scheme for RSA encryption
+
+from Crypto.PublicKey import RSA
+
+#RSA: Implements RSA encryption algorithm 
+#RSA uses a public key for encryption and a private key for decryption
+#Widely used for key exchange, digital signatures and more
+
+from Crypto.Random import get_random_bytes
+
+#Function used to generate cryptographically secure random bytes (AES key here)
+# Necessary for symmetric encryption process
+
+#RSA Key Pair
+key = RSA.generate(2048) #Key length of 2048 bits, key length determines strength of encryption and security level of RSA algorithm
+private_key = key.export_key()
+public_key = key.publickey().export_key()
