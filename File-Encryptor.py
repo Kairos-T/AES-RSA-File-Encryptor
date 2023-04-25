@@ -20,11 +20,11 @@ with open('public_key.pem', 'wb') as f:
     f.write(public_key)
 
 def generate_aes_key():
-    """Generate a random AES key."""
+    #Generate a random AES key.
     return get_random_bytes(AES_blocksize)
 
 def encrypt_file(filename, aes_key, rsa_public_key):
-    """Encrypt a file using AES and RSA."""
+    #Encrypt a file using AES and RSA.
     #Read file contents
     with open(filename, 'rb') as file:
         plaintext = file.read()
@@ -42,7 +42,7 @@ def encrypt_file(filename, aes_key, rsa_public_key):
     rsa_cipher = PKCS1_OAEP.new(rsa_public_key)
     encrypted_aes_key = rsa_cipher.encrypt(aes_key)
     
-    #Writing encrypted AES key and ciphertext to output fo;e
+    #Writing encrypted AES key and ciphertext to output file
     with open('encrypted_' + filename, 'wb') as output_file:
         output_file.write(encrypted_aes_key)
         output_file.write(aes_cipher.nonce)
@@ -50,5 +50,28 @@ def encrypt_file(filename, aes_key, rsa_public_key):
         output_file.write(ciphertext) 
 
 def decrypt_file(filename, aes_key, rsa_private_key):
-    """Decrypt a file using AES and RSA."""
+    #Decrypt a file using AES and RSA private key
+    rsa_cipher = PKCS1_OAEP.new(rsa_private_key)
+    decrypted_aes_key = rsa_cipher.decrypt(aes_key)
+
+    # Read encrypted file contents
+    with open(filename, 'rb') as file:
+        encrypted_data = file.read()
     
+    # Extract AES cipher nonce, tag, and ciphertext from encrypted data
+    encrypted_aes_key_size = rsa_private_key.size_in_bytes()
+    nonce = encrypted_data[:AES_blocksize]
+    tag = encrypted_data[AES_blocksize:AES_blocksize+16]
+    ciphertext = encrypted_data[AES_blocksize+16:encrypted_aes_key_size]
+
+    # Create AES cipher using decrypted AES key and extracted nonce
+    aes_cipher = AES.new(decrypted_aes_key, AES.MODE_EAX, nonce=nonce)
+
+    # Decrypting the ciphertext using AES
+    plaintext = aes_cipher.decrypt_and_verify(ciphertext, tag)
+
+    # Writing the decrypted plaintext to output file
+    with open('decrypted_' + filename, 'wb') as output_file:
+        output_file.write(plaintext)
+
+
