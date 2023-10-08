@@ -17,7 +17,7 @@ This Python script allows you to encrypt and decrypt files using AES and RSA enc
     ```
 
 3. Install the required packages using pip:
-    ```
+    ```bash
     pip install -r requirements.txt
     ```
 
