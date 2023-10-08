@@ -49,13 +49,13 @@ def decrypt_file(input_filename, output_filename, rsa_private_key):
 
         # Extract AES cipher nonce, tag, and ciphertext from encrypted data
         encrypted_aes_key_size = rsa_private_key.size_in_bytes()
-        nonce = encrypted_data[:AES.block_size]
-        tag = encrypted_data[AES.block_size:AES.block_size + 16]
-        ciphertext = encrypted_data[AES.block_size + 16:encrypted_aes_key_size]
+        nonce = encrypted_data[AES_KEY_LENGTH:AES_KEY_LENGTH + AES.block_size]
+        tag = encrypted_data[AES_KEY_LENGTH + AES.block_size:AES_KEY_LENGTH + AES.block_size + 16]
+        ciphertext = encrypted_data[AES_KEY_LENGTH + AES.block_size + 16:]
 
         # Decrypt the AES key using RSA private key
         rsa_cipher = PKCS1_OAEP.new(rsa_private_key)
-        aes_key = rsa_cipher.decrypt(encrypted_data[:RSA_KEY_LENGTH // 8])
+        aes_key = rsa_cipher.decrypt(encrypted_data[:encrypted_aes_key_size])
 
         # Create AES cipher using decrypted AES key and extracted nonce
         aes_cipher = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
